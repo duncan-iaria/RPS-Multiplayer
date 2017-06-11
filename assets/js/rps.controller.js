@@ -18,6 +18,7 @@ var rpsController = ( function()
 	var player2Stats = document.getElementById( 'player2-stats' );
 
 	var playerId;
+	var playerKey;
 	var currentPlayerChoice;
 	var currentTurn;
 
@@ -34,6 +35,8 @@ var rpsController = ( function()
 		getPlayerId: getLocalPlayerId,
 		startTurn: startTurn,
 		setChoice: setPlayerChoice,
+		setPlayerKey: setLocalPlayerKey,
+		getPlayerKey: getLocalPlayerKey
 	}
 	
 	return publicAPI;
@@ -81,6 +84,16 @@ var rpsController = ( function()
 	function getLocalPlayerId()
 	{
 		return playerId;
+	}
+
+	function setLocalPlayerKey( tKey )
+	{
+		playerKey = tKey;
+	}
+
+	function getLocalPlayerKey()
+	{
+		return playerKey;
 	}
 
 	function updatePlayerStats( tPlayerId, tStats )

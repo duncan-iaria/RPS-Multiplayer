@@ -66,8 +66,8 @@ var rps = ( function()
 			//save local id to the controller
 			rpsController.setPlayerId( tempCurrentPlayerCount + 1 );
 
-			//push the new player to the game
-			currentPlayerData.push
+			//push the new player to the game and save the key
+			var tempKey = currentPlayerData.push
 			({
 				player: 
 				{ 
@@ -79,7 +79,9 @@ var rps = ( function()
 						losses: 0
 					}
 				}
-			 });
+			 }).key;
+
+			rpsController.setPlayerKey( tempKey );
 
 			//login was a success, trigger callback
 			tSuccessCallback( tName );
@@ -91,22 +93,11 @@ var rps = ( function()
 		console.log( "lamos" );
 		//console.log( currentPlayerData.equalTo( tPlayerId ).val() );
 		//console.log( currentPlayerData.orderByChild( 'player' ).equalTo( tPlayerId ) );
-		currentPlayerData.orderByChild( 'player' ).equalTo( tPlayerId ).once( 'value' ).then( function( data )
-		{
-			console.log( data.val() );
-			console.log( data.val().player );
-			console.log( data.val().playerData );
-
-			//update the choice val
-			// data.val().key
-			// ({
-			// 	choice: tChoice,
-			// })
-
-			// database.ref( "game/currentPlayers/" + data.val().constructor.name + "/playerData/" ).set
-			// ({
-			// 	choice: tChoice,
-			// })
+		
+		currentPlayerData.orderByChild( 'player/id' ).equalTo( tPlayerId ).once( 'value' ).then( function( data )
+		{	
+			tempKey = rpsController.getPlayerKey();
+			console.log( data.child( tempKey ).val().player.data );
 
 			//increment turn
 			turnData.set
