@@ -13,4 +13,17 @@ firebase.initializeApp( config );
 
 console.log( "firebase initilized" );
 
+//=======================
+// FIREBASE PATHS
+//=======================
+//base path
 var database = firebase.database();
+
+//current player path
+var currentPlayerData = database.ref( "game/currentPlayers" );
+
+//path for the chat data
+var chatData = database.ref( "game/chat" );
+
+//path for the current turn
+var turnData = database.ref( "game/turn" );

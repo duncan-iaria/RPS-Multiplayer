@@ -26,29 +26,45 @@
 			<h4>online edition</h4>
 		</header>
 		
+		<form id="login-form" class="hidden">
+			<label for="player-name">Name:</label>
+			<input type="text" name="player-name" id="login-input"></input>
+			<button type="submit" id="login-button">login</button>
+		</form>
+
 		<div class="feedback-container">
 			<div class="feedback">
-				<h3>waiting for players...</h3>
+				<h3 id="feedback-message">login to start</h3>
 			</div>
 		</div>
 
 		<div class="player-container">
 			<div class="player-box player1">
-				<h2 class="display">ROCK!</h2>
+				<div class="choices-container hidden">
+					<div class="choice" data-choice="rock"><h3>ROCK</h3></div>
+					<div class="choice" data-choice="paper"><h3>PAPER</h3></div>
+					<div class="choice" data-choice="scissors"><h3>SCISSORS</h3></div>
+				</div>
+				<h2 class="display" id="player1-choice">???</h2>
 			</div>
 			<div class="player-stats">
-				<div class="player-name">player 1: Duncan</div>
-				<div class="player-game-stats">W: 0 L: 0</div>
+				<div class="player-name" id="player1-name">player 1: --- </div>
+				<div class="player-game-stats" id="player1-stats">W: 0 L: 0</div>
 			</div>
 		</div>
 
 		<div class="player-container">
 			<div class="player-box player2">
-				<h2 class="display">PAPER!</h2>
+				<div class="choices-container hidden">
+					<div class="choice" data-choice="rock"><h3>ROCK</h3></div>
+					<div class="choice" data-choice="paper"><h3>PAPER</h3></div>
+					<div class="choice" data-choice="scissors"><h3>SCISSORS</h3></div>
+				</div>
+				<h2 class="display" id="player2-choice">???</h2>
 			</div>
 			<div class="player-stats">
-				<div class="player-name">player 2: Ahmed</div>
-				<div class="player-game-stats">W: 0 L: 0</div>
+				<div class="player-name" id="player2-name">player 2: --- </div>
+				<div class="player-game-stats" id="player2-stats">W: 0 L: 0</div>
 			</div>
 		</div>
 
@@ -56,5 +72,6 @@
 
 	<script src="assets/js/firebase.config.js"></script>
 	<script src="assets/js/rps.js"></script>
+	<script src="assets/js/rps.controller.js"></script>
 </body>
 </html>
