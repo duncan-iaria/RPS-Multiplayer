@@ -1,0 +1,90 @@
+body
+{
+	color: #333;
+	font-size: 16px;
+	font-weight: bold;
+	line-height: 1.5em;
+
+	background-color: #fafafa;
+
+	font-family: 'Bubbler One', sans-serif;
+}
+
+.display
+{
+	font-family: 'Rubik', sans-serif;
+}
+
+h1, h2, h3, h4
+{
+	font-weight: bold;
+}
+
+h1
+{
+	font-size: 2em;
+}
+
+h2
+{
+	font-size: 1.75em;
+}
+
+h3
+{
+	font-size: 1.5em;
+}
+
+h4
+{
+	font-size: 1.25em;
+}
+
+header
+{
+	padding: 10px 0px;
+}
+
+.feedback-container
+{
+	margin: 10px 0px;
+}
+
+.player-container
+{
+	display: inline-block;
+	margin-right: 20px;
+}
+
+.player-box
+{
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+	color: #FFF;
+
+	width: 200px;
+	height: 200px;
+
+	border: 1px solid #333;
+}
+
+.player-stats > div
+{
+	display: inline-block;
+}
+
+.player-game-stats
+{
+	float: right;
+}
+
+.player1
+{
+	background-color: #FF5722;
+}
+
+.player2
+{
+	background-color: #0091EA;
+}
