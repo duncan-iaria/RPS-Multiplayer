@@ -47,6 +47,7 @@ var rpsController = ( function()
 		getPlayerId: getLocalPlayerId,
 		setPlayerKey: setLocalPlayerKey,
 		getPlayerKey: getLocalPlayerKey,
+		setOpponentId: setOpponentId,
 
 		//game logic
 		startTurn: startTurn,
@@ -113,9 +114,9 @@ var rpsController = ( function()
 		return playerId;
 	}
 
-	function setOpponentId( tPlayerId )
+	function setOpponentId( tId )
 	{
-		opponentId = tPlayerId;
+		opponentId = tId;
 	}
 
 	function getOpponentId()
@@ -138,6 +139,7 @@ var rpsController = ( function()
 
 	}
 
+	//initilize a new player
 	function setNewPlayer( tPlayerId, tName )
 	{
 		//set the display name
@@ -146,7 +148,7 @@ var rpsController = ( function()
 		//if this new player is not the local player's id, then set it as the opponents
 		if( tPlayerId != getLocalPlayerId() )
 		{
-			setOpponentId = tPlayerId;
+			setOpponentId( tPlayerId );
 		}
 	}
 
@@ -166,6 +168,8 @@ var rpsController = ( function()
 		//if we're on the eval stage
 		if( currentTurn == 3 )
 		{
+			console.log( "started round 3" );
+			displayOpponentChoice();
 			compareChoices();
 		}
 	}
@@ -185,9 +189,10 @@ var rpsController = ( function()
 		$( '.player' + getLocalPlayerId() + " > div" ).addClass( 'hidden' );		
 	}
 
-	function displayAllChoices()
+	function displayOpponentChoice()
 	{
-
+		console.log( "opponent id = " + getOpponentId() );
+		$( '#player' + getOpponentId() + "-choice" ).text( currentOpponentChoice );
 	}
 
 	function setPlayerChoice()
@@ -208,7 +213,7 @@ var rpsController = ( function()
 	function evaluateChoice( tPlayerData )
 	{	
 		//if it's not your choice, store opponents choice locally for comparison
-		if( tPlayerData.id != playerId )
+		if( tPlayerData.id != getLocalPlayerId() )
 		{
 			currentOpponentChoice = tPlayerData.data.choice;
 		}
@@ -216,7 +221,70 @@ var rpsController = ( function()
 
 	function compareChoices()
 	{
+		switch( currentPlayerChoice )
+		{
+			case "scissors":
+				compareScissors();
+				break;
 
+			case "paper":
+				break;
+
+			case "rock":
+				break;
+
+			default:
+				break;
+
+		}
+
+		function compareScissors()
+		{
+			if( currentOpponentChoice == "rock" )
+			{
+				//lose
+			}
+			else if( currentOpponentChoice == "paper" )
+			{
+				//win
+			}
+			else
+			{
+				//tie
+			}
+		}
+
+		function compareScissors()
+		{
+			if( currentOpponentChoice == "rock" )
+			{
+				//lose
+			}
+			else if( currentOpponentChoice == "paper" )
+			{
+				//win
+			}
+			else
+			{
+				//tie
+			}
+		}
+
+		function compareScissors()
+		{
+			if( currentOpponentChoice == "rock" )
+			{
+				//lose
+			}
+			else if( currentOpponentChoice == "paper" )
+			{
+				//win
+			}
+			else
+			{
+				//tie
+			}
+		}
 		//setFeedbackMessage( )
 	}
 
