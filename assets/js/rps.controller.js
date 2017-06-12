@@ -17,6 +17,8 @@ var rpsController = ( function()
 	var player1Stats = document.getElementById( 'player1-stats' );
 	var player2Stats = document.getElementById( 'player2-stats' );
 
+	var resetButton = document.getElementById( 'reset-server' );
+
 	var playerId;
 	var playerKey;
 	var currentPlayerChoice;
@@ -36,7 +38,9 @@ var rpsController = ( function()
 		startTurn: startTurn,
 		setChoice: setPlayerChoice,
 		setPlayerKey: setLocalPlayerKey,
-		getPlayerKey: getLocalPlayerKey
+		getPlayerKey: getLocalPlayerKey,
+		resetButton: resetButton,
+		resetServer: resetServer
 	}
 	
 	return publicAPI;
@@ -127,6 +131,7 @@ var rpsController = ( function()
 	//for showing what choice was made and hiding the options
 	function displayCurrentChoice()
 	{
+		$( '#player' + getLocalPlayerId() + "-choice" ).text( currentPlayerChoice );
 		$( '#player' + getLocalPlayerId() + "-choice" ).removeClass( 'hidden' );
 		$( '.player' + getLocalPlayerId() + " > div" ).addClass( 'hidden' );		
 	}
@@ -135,6 +140,9 @@ var rpsController = ( function()
 	{	
 		currentPlayerChoice = $( this ).attr( 'data-choice' );
 
+		//increment the current turn
+		currentTurn++;
+
 		//set the player choice in the server
 		rps.setPlayerChoice( getLocalPlayerId(), currentPlayerChoice, currentTurn );
 
@@ -142,9 +150,15 @@ var rpsController = ( function()
 		displayCurrentChoice();
 	}
 
+	function resetServer()
+	{
+		rps.resetServer();
+	}
+
 })();
 
 
 //EVENT LISTENERS
 rpsController.loginButton.addEventListener( "click", rpsController.login );
+rpsController.resetButton.addEventListener( "click", rpsController.resetServer );
 $( '.choice' ).on( "click", rpsController.setChoice ); 

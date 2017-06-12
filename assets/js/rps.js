@@ -76,7 +76,8 @@ var rps = ( function()
 					{
 						name: tName,
 						wins: 0,
-						losses: 0
+						losses: 0,
+						choice: "null"
 					}
 				}
 			 }).key;
@@ -89,22 +90,49 @@ var rps = ( function()
 	}
 
 	function setPlayerChoice( tPlayerId, tChoice, tCurrentTurn )
-	{
-		console.log( "lamos" );
-		//console.log( currentPlayerData.equalTo( tPlayerId ).val() );
-		//console.log( currentPlayerData.orderByChild( 'player' ).equalTo( tPlayerId ) );
-		
+	{	
 		currentPlayerData.orderByChild( 'player/id' ).equalTo( tPlayerId ).once( 'value' ).then( function( data )
 		{	
 			tempKey = rpsController.getPlayerKey();
 			console.log( data.child( tempKey ).val().player.data );
 
+			// data.child( tempKey ).set
+			// ({
+			// 	player:
+			// 	{
+			// 		data:
+			// 		{
+			// 			choice: tChoice,
+			// 		}
+			// 	}
+			// });
+
+			database.ref( "game/currentPlayers/" + tempKey + "/player/data/" ).update
+			({
+				choice: tChoice,
+			});
+
 			//increment turn
 			turnData.set
 			({
-			 	turn: tCurrentTurn++,
+			 	turn: tCurrentTurn,
 			});
+		});
+	}
 
+	function resetServer()
+	{
+		console.log( "resetting server" );
+		//database.ref( "game" ).remove( "currentPlayers" );
+		//database.ref( "game" ).remove( "turn" );
+		currentPlayerData.remove( function( error )
+		{
+			console.log( error );
+		});
+
+		turnData.remove( function( error )
+		{
+			console.log( error );
 		});
 	}
 
@@ -130,6 +158,12 @@ var rps = ( function()
 				});
 			}
 		})
+	});
+
+	currentPlayerData.on( "child_changed", function( data )
+	{
+		console.log( "child changed!" );
+		console.log( data.val().player.data.choice );
 	});
 
 	//turn changed
@@ -163,6 +197,7 @@ var rps = ( function()
 		initlize: initlize,
 		logPlayerIn: addPlayer,
 		setPlayerChoice: setPlayerChoice,
+		resetServer: resetServer,
 	}
 	
 	return publicAPI;
