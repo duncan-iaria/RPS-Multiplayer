@@ -17,35 +17,52 @@ var rpsController = ( function()
 	var player1Stats = document.getElementById( 'player1-stats' );
 	var player2Stats = document.getElementById( 'player2-stats' );
 
+	//for testing
 	var resetButton = document.getElementById( 'reset-server' );
 
+	//local player data
 	var playerId;
+	var opponentId;
 	var playerKey;
 	var currentPlayerChoice;
+	var currentOpponentChoice;
+
 	var currentTurn;
 
 	//what is publically accessible
 	var publicAPI =
 	{
+		//login methods
 		loginButton: loginButton,
 		login: playerLogin,
 		hideLogin: hideLoginForm,
 		showLogin: showLoginForm,
+
+		//feedback methods
 		setFeedback: setFeedbackMessage,
-		setPlayerName: setPlayerName,
+		setNewPlayer: setNewPlayer,
+
+		//utilities
 		setPlayerId: setLocalPlayerId,
 		getPlayerId: getLocalPlayerId,
-		startTurn: startTurn,
-		setChoice: setPlayerChoice,
 		setPlayerKey: setLocalPlayerKey,
 		getPlayerKey: getLocalPlayerKey,
+
+		//game logic
+		startTurn: startTurn,
+		setChoice: setPlayerChoice,
+		evaluateChoice: evaluateChoice,
+
+		//testing
 		resetButton: resetButton,
 		resetServer: resetServer
 	}
 	
 	return publicAPI;
 
-	//LOGIN
+	//===============
+	// LOGIN
+	//===============
 	function playerLogin( tEvent )
 	{
 		tEvent.preventDefault();
@@ -63,23 +80,29 @@ var rpsController = ( function()
 		setFeedbackMessage( "waiting for players..." );
 	}
 
+	//hide, effectively disallowing future logins
 	function hideLoginForm()
 	{
 		$( loginForm ).addClass( 'hidden' );
 	}
 
+	//display the login form to the user
 	function showLoginForm()
 	{
 		$( loginForm ).removeClass( 'hidden' );
 	}
 
-	//FEEDBACK
+	//====================
+	// FEEDBACK
+	///===================
 	function setFeedbackMessage( tMessage )
 	{
 		$( feedbackMessage ).text( tMessage );
 	}
 
-	//PLAYERS
+	//====================
+	// PLAYERS
+	///===================
 	function setLocalPlayerId( tPlayerId )
 	{
 		playerId = tPlayerId;
@@ -88,6 +111,16 @@ var rpsController = ( function()
 	function getLocalPlayerId()
 	{
 		return playerId;
+	}
+
+	function setOpponentId( tPlayerId )
+	{
+		opponentId = tPlayerId;
+	}
+
+	function getOpponentId()
+	{
+		return opponentId;
 	}
 
 	function setLocalPlayerKey( tKey )
@@ -105,20 +138,36 @@ var rpsController = ( function()
 
 	}
 
-	function setPlayerName( tPlayerId, tName )
+	function setNewPlayer( tPlayerId, tName )
 	{
+		//set the display name
 		$( '#player' + tPlayerId + "-name" ).html( "player" + tPlayerId + ": " + tName );
+
+		//if this new player is not the local player's id, then set it as the opponents
+		if( tPlayerId != getLocalPlayerId() )
+		{
+			setOpponentId = tPlayerId;
+		}
 	}
 
-	//TURNS
+	//====================
+	// TURNS/GAME LOGIC
+	///===================
 	function startTurn( tTurn )
 	{
+		currentTurn = tTurn;
+
+		//if the turn equals the player id (meaning its your turn)
 		if( tTurn == playerId )
 		{
 			displayTurnCommands( tTurn );
 		}
 
-		currentTurn = tTurn;
+		//if we're on the eval stage
+		if( currentTurn == 3 )
+		{
+			compareChoices();
+		}
 	}
 
 	//for showing the turn options
@@ -136,6 +185,11 @@ var rpsController = ( function()
 		$( '.player' + getLocalPlayerId() + " > div" ).addClass( 'hidden' );		
 	}
 
+	function displayAllChoices()
+	{
+
+	}
+
 	function setPlayerChoice()
 	{	
 		currentPlayerChoice = $( this ).attr( 'data-choice' );
@@ -150,6 +204,23 @@ var rpsController = ( function()
 		displayCurrentChoice();
 	}
 
+	//check if it's the opponents choice that was set or your own
+	function evaluateChoice( tPlayerData )
+	{	
+		//if it's not your choice, store opponents choice locally for comparison
+		if( tPlayerData.id != playerId )
+		{
+			currentOpponentChoice = tPlayerData.data.choice;
+		}
+	}
+
+	function compareChoices()
+	{
+
+		//setFeedbackMessage( )
+	}
+
+	//TESTING
 	function resetServer()
 	{
 		rps.resetServer();

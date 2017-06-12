@@ -21,9 +21,6 @@ console.log( "rps initilized" );
 // 	message: "hello",
 // });
 
-
-
-
 //=========================
 //	Main Game Object
 //=========================
@@ -39,13 +36,13 @@ var rps = ( function()
 			if( data.numChildren() < 2 )
 			{
 				//allow login
-				console.log( "showing login form" );
+				//console.log( "showing login form" );
 				rpsController.showLogin();
 			}
 			else
 			{
 				//hide login
-				console.log( "hiding login form" );
+				//console.log( "hiding login form" );
 				rpsController.hideLogin();
 				rpsController.setFeedback( "game currently in progress..." );
 			}
@@ -94,18 +91,7 @@ var rps = ( function()
 		currentPlayerData.orderByChild( 'player/id' ).equalTo( tPlayerId ).once( 'value' ).then( function( data )
 		{	
 			tempKey = rpsController.getPlayerKey();
-			console.log( data.child( tempKey ).val().player.data );
-
-			// data.child( tempKey ).set
-			// ({
-			// 	player:
-			// 	{
-			// 		data:
-			// 		{
-			// 			choice: tChoice,
-			// 		}
-			// 	}
-			// });
+			//console.log( data.child( tempKey ).val().player.data );
 
 			database.ref( "game/currentPlayers/" + tempKey + "/player/data/" ).update
 			({
@@ -122,9 +108,7 @@ var rps = ( function()
 
 	function resetServer()
 	{
-		console.log( "resetting server" );
-		//database.ref( "game" ).remove( "currentPlayers" );
-		//database.ref( "game" ).remove( "turn" );
+		//console.log( "resetting server" );
 		currentPlayerData.remove( function( error )
 		{
 			console.log( error );
@@ -144,7 +128,7 @@ var rps = ( function()
 	{
 		var tempNewPlayer = data.val();
 		console.log( tempNewPlayer.player );
-		rpsController.setPlayerName( tempNewPlayer.player.id, tempNewPlayer.player.data.name );
+		rpsController.setNewPlayer( tempNewPlayer.player.id, tempNewPlayer.player.data.name );
 
 		//check how many players we now have
 		currentPlayerData.once( "value" ).then( function( data )
@@ -154,16 +138,20 @@ var rps = ( function()
 				//we have enough players to play the game
 				turnData.set
 				({
+					//start the turns
 				 	turn: 1,
 				});
 			}
 		})
 	});
 
+	//on child change ( choice was updated )
 	currentPlayerData.on( "child_changed", function( data )
 	{
 		console.log( "child changed!" );
 		console.log( data.val().player.data.choice );
+		rpsController.evaluateChoice( data.val().player );
+
 	});
 
 	//turn changed
@@ -184,6 +172,7 @@ var rps = ( function()
 					rpsController.startTurn( 2 );
 					break;
 				case 3:
+					rpsController.startTurn( 3 );
 					break;
 				default:
 					break;
@@ -204,4 +193,5 @@ var rps = ( function()
 
 })();
 
+//kick this whole thing off
 rps.initlize();
