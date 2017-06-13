@@ -63,6 +63,7 @@ var rpsController = ( function()
 		startTurn: startTurn,
 		setChoice: setPlayerChoice,
 		evaluateChoice: evaluateChoice,
+		startNewRound: startNewRound,
 
 		//testing
 		resetButton: resetButton,
