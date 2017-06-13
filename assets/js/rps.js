@@ -74,6 +74,7 @@ var rps = ( function()
 						name: tName,
 						wins: 0,
 						losses: 0,
+						ties: 0,
 						choice: "null"
 					}
 				}
@@ -86,23 +87,39 @@ var rps = ( function()
 		});
 	}
 
-	function setPlayerChoice( tPlayerId, tChoice, tCurrentTurn )
+	function setPlayerChoice( tPlayerId, tPlayerKey, tChoice, tCurrentTurn )
 	{	
 		currentPlayerData.orderByChild( 'player/id' ).equalTo( tPlayerId ).once( 'value' ).then( function( data )
 		{	
-			tempKey = rpsController.getPlayerKey();
-			//console.log( data.child( tempKey ).val().player.data );
-
-			database.ref( "game/currentPlayers/" + tempKey + "/player/data/" ).update
+			database.ref( "game/currentPlayers/" + tPlayerKey + "/player/data/" ).update
 			({
 				choice: tChoice,
 			});
 
 			//increment turn
-			turnData.set
+			setTurn( tCurrentTurn );
+		});
+	}
+
+	function setPlayerStats( tPlayerId, tPlayerKey, tStats )
+	{
+		//get the player by id from the server
+		currentPlayerData.orderByChild( 'player/id' ).equalTo( tPlayerId ).once( 'value' ).then( function( data )
+		{	
+			database.ref( "game/currentPlayers/" + tPlayerKey + "/player/data/" ).update
 			({
-			 	turn: tCurrentTurn,
+				wins: tStats.wins,
+				losses: tStats.losses,
+				ties: tStats.ties
 			});
+		});
+	}
+
+	function setTurn( tTurn )
+	{
+		turnData.set
+		({
+		 	turn: tTurn,
 		});
 	}
 
@@ -135,12 +152,8 @@ var rps = ( function()
 		{
 			if( data.numChildren() == 2 )
 			{
-				//we have enough players to play the game
-				turnData.set
-				({
-					//start the turns
-				 	turn: 1,
-				});
+				//we have enough players to play the game, so start the game!
+				setTurn( 1 );
 			}
 		})
 	});
@@ -149,8 +162,9 @@ var rps = ( function()
 	currentPlayerData.on( "child_changed", function( data )
 	{
 		console.log( "child changed!" );
-		console.log( data.val().player.data.choice );
+		//console.log( data.val().player.data.choice );
 		rpsController.evaluateChoice( data.val().player );
+		rpsController.updatePlayerStats( data.val().player );
 
 	});
 
@@ -186,6 +200,8 @@ var rps = ( function()
 		initlize: initlize,
 		logPlayerIn: addPlayer,
 		setPlayerChoice: setPlayerChoice,
+		setTurn: setTurn,
+		setPlayerStats: setPlayerStats,
 		resetServer: resetServer,
 	}
 	

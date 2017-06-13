@@ -27,7 +27,15 @@ var rpsController = ( function()
 	var currentPlayerChoice;
 	var currentOpponentChoice;
 
+	var localStats =
+	{
+		wins: 0,
+		losses: 0,
+		ties: 0,
+	}
+
 	var currentTurn;
+	var endRoundTimerDuration = 2500; //(2seconds)
 
 	//what is publically accessible
 	var publicAPI =
@@ -41,6 +49,7 @@ var rpsController = ( function()
 		//feedback methods
 		setFeedback: setFeedbackMessage,
 		setNewPlayer: setNewPlayer,
+		updatePlayerStats: updatePlayerStats,
 
 		//utilities
 		setPlayerId: setLocalPlayerId,
@@ -134,16 +143,16 @@ var rpsController = ( function()
 		return playerKey;
 	}
 
-	function updatePlayerStats( tPlayerId, tStats )
+	function updatePlayerStats( tPlayer )
 	{
-
+		$( '#player' + tPlayer.id +"-stats" ).text( "W : " + tPlayer.data.wins + " / L : " + tPlayer.data.losses + " / T : " + tPlayer.data.ties );
 	}
 
 	//initilize a new player
 	function setNewPlayer( tPlayerId, tName )
 	{
 		//set the display name
-		$( '#player' + tPlayerId + "-name" ).html( "player" + tPlayerId + ": " + tName );
+		$( '#player' + tPlayerId + "-name" ).html( "<h3>player" + tPlayerId + ": " + tName +"</h3>" );
 
 		//if this new player is not the local player's id, then set it as the opponents
 		if( tPlayerId != getLocalPlayerId() )
@@ -195,6 +204,12 @@ var rpsController = ( function()
 		$( '#player' + getOpponentId() + "-choice" ).text( currentOpponentChoice );
 	}
 
+	function displayReset()
+	{
+		$( '#player' + getLocalPlayerId() + "-choice" ).text( "???" );
+		$( '#player' + getOpponentId() + "-choice" ).text( "???" );
+	}
+
 	function setPlayerChoice()
 	{	
 		currentPlayerChoice = $( this ).attr( 'data-choice' );
@@ -203,7 +218,7 @@ var rpsController = ( function()
 		currentTurn++;
 
 		//set the player choice in the server
-		rps.setPlayerChoice( getLocalPlayerId(), currentPlayerChoice, currentTurn );
+		rps.setPlayerChoice( getLocalPlayerId(), getLocalPlayerKey(), currentPlayerChoice, currentTurn );
 
 		//display the local choice
 		displayCurrentChoice();
@@ -219,8 +234,23 @@ var rpsController = ( function()
 		}
 	}
 
+	function startNewRound()
+	{
+		//reset the displays
+		displayReset();
+
+		//set the turn to 1
+		rps.setTurn( 1 );
+	}
+
+	//MAIN GAME LOGIC COMPARISONS ARE HERE
 	function compareChoices()
 	{
+		//message for feedback (win/lose/tie)
+		var tempWinMessage = "Player " + getLocalPlayerId() + " wins!";
+		var tempLoseMessage = "Player " + getOpponentId() + " wins!";
+		var tempTieMessage = "TIE GAME!";
+
 		switch( currentPlayerChoice )
 		{
 			case "scissors":
@@ -228,64 +258,89 @@ var rpsController = ( function()
 				break;
 
 			case "paper":
+				comparePaper();
 				break;
 
 			case "rock":
+				compareRock();
 				break;
 
 			default:
 				break;
-
 		}
 
+		//start new round after a timer
+		setTimeout( startNewRound, endRoundTimerDuration );
+
+		//COMPARISON FUNCTIONS
 		function compareScissors()
 		{
 			if( currentOpponentChoice == "rock" )
 			{
-				//lose
+				onLose();
 			}
 			else if( currentOpponentChoice == "paper" )
 			{
-				//win
+				onWin();
 			}
 			else
 			{
-				//tie
+				onTie();
 			}
 		}
 
-		function compareScissors()
+		function compareRock()
 		{
 			if( currentOpponentChoice == "rock" )
 			{
-				//lose
+				onTie();
 			}
 			else if( currentOpponentChoice == "paper" )
 			{
-				//win
+				onLose();
 			}
 			else
 			{
-				//tie
+				onWin();
 			}
 		}
 
-		function compareScissors()
+		function comparePaper()
 		{
 			if( currentOpponentChoice == "rock" )
 			{
-				//lose
+				onWin();
 			}
 			else if( currentOpponentChoice == "paper" )
 			{
-				//win
+				onTie();
 			}
 			else
 			{
-				//tie
+				onLose();
 			}
 		}
-		//setFeedbackMessage( )
+
+		function onWin()
+		{
+			localStats.wins++;
+			setFeedbackMessage( tempWinMessage );
+			rps.setPlayerStats( getLocalPlayerId(), getLocalPlayerKey(), localStats );
+		}
+
+		function onTie()
+		{
+			localStats.ties++;
+			setFeedbackMessage( tempTieMessage );
+			rps.setPlayerStats( getLocalPlayerId(), getLocalPlayerKey(), localStats );
+		}
+
+		function onLose()
+		{
+			localStats.losses++;
+			setFeedbackMessage( tempLoseMessage );
+			rps.setPlayerStats( getLocalPlayerId(), getLocalPlayerKey(), localStats );
+		}
 	}
 
 	//TESTING
