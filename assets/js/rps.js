@@ -28,7 +28,7 @@ console.log( "rps initilized" );
 var rps = ( function()
 {
 	//check the server to see if we have players or not
-	function initlize()
+	function initialize()
 	{
 		currentPlayerData.once( "value" ).then( function( data )
 		{
@@ -84,6 +84,9 @@ var rps = ( function()
 
 			//login was a success, trigger callback
 			tSuccessCallback( tName );
+
+			//setup disconnect trigger
+			database.ref( "game/currentPlayers/" + tempKey ).onDisconnect().remove();
 		});
 	}
 
@@ -158,6 +161,15 @@ var rps = ( function()
 		})
 	});
 
+	//on player disconnect
+	currentPlayerData.on( "child_removed", function( data )
+	{
+		console.log( "player removed" );
+		///reset the name field of the player who left
+		//rpsController.setNewPlayer( data.val().player.id, "---" );
+		setTurn( 0 );
+	});
+
 	//on child change ( choice was updated )
 	currentPlayerData.on( "child_changed", function( data )
 	{
@@ -176,6 +188,7 @@ var rps = ( function()
 			switch( data.val().turn )
 			{
 				case 0:
+					rpsController.startTurn( 0 );
 					break;
 				case 1:
 					rpsController.setFeedback( "player 1's turn" );
@@ -197,7 +210,7 @@ var rps = ( function()
 	//what is publically accessible
 	var publicAPI =
 	{
-		initlize: initlize,
+		initialize: initialize,
 		logPlayerIn: addPlayer,
 		setPlayerChoice: setPlayerChoice,
 		setTurn: setTurn,
@@ -210,4 +223,4 @@ var rps = ( function()
 })();
 
 //kick this whole thing off
-rps.initlize();
+rps.initialize();

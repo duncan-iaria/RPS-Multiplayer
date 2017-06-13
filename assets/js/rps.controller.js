@@ -2,6 +2,7 @@
 //	RPS CONTROLLER
 //=======================
 //for sending events from the frontend to the game
+var endRoundTimerTimeout;
 
 var rpsController = ( function()
 {
@@ -88,6 +89,16 @@ var rpsController = ( function()
 
 		hideLoginForm();
 		setFeedbackMessage( "waiting for players..." );
+
+		//TODO fix this hacky way to set the opponent ids
+		if( getLocalPlayerId() == 1 )
+		{
+			setOpponentId( 2 );
+		}
+		else if( getLocalPlayerId() == 2 )
+		{	
+			setOpponentId( 1 );
+		}
 	}
 
 	//hide, effectively disallowing future logins
@@ -150,15 +161,9 @@ var rpsController = ( function()
 
 	//initilize a new player
 	function setNewPlayer( tPlayerId, tName )
-	{
+	{	
 		//set the display name
 		$( '#player' + tPlayerId + "-name" ).html( "<h3>player" + tPlayerId + ": " + tName +"</h3>" );
-
-		//if this new player is not the local player's id, then set it as the opponents
-		if( tPlayerId != getLocalPlayerId() )
-		{
-			setOpponentId( tPlayerId );
-		}
 	}
 
 	//====================
@@ -168,9 +173,26 @@ var rpsController = ( function()
 	{
 		currentTurn = tTurn;
 
-		//if the turn equals the player id (meaning its your turn)
-		if( tTurn == playerId )
+		//game has been reset
+		if( currentTurn == 0 )
 		{
+			if( endRoundTimerTimeout != null )
+			{
+				console.log('timeout cleared');
+				console.log( endRoundTimerTimeout );
+				clearTimeout( endRoundTimerTimeout );
+			}
+
+			displayHardReset();
+			setLocalPlayerId( 1 );
+			setFeedbackMessage( "waiting for players..." );
+			return;
+		}
+
+		//if the turn equals the player id (meaning its your turn)
+		if( currentTurn == getLocalPlayerId() )
+		{
+			console.log( "current turn" + getLocalPlayerId() );
 			displayTurnCommands( tTurn );
 		}
 
@@ -210,6 +232,18 @@ var rpsController = ( function()
 		$( '#player' + getOpponentId() + "-choice" ).text( "???" );
 	}
 
+	function displayHardReset()
+	{
+		$( '#player' + getLocalPlayerId() + "-choice" ).text( "???" );
+		$( '#player' + getOpponentId() + "-choice" ).text( "???" );
+
+		$( '#player' + getLocalPlayerId() + "-choice" ).removeClass( 'hidden' );
+		$( '#player' + getOpponentId() + "-choice" ).removeClass( 'hidden' );
+
+		$( '.player' + getLocalPlayerId() + " > div" ).addClass( 'hidden' );
+		$( '.player' + getOpponentId() + " > div" ).addClass( 'hidden' );	
+	}
+
 	function setPlayerChoice()
 	{	
 		currentPlayerChoice = $( this ).attr( 'data-choice' );
@@ -234,6 +268,7 @@ var rpsController = ( function()
 		}
 	}
 
+	//for starting a new round between two players (resetting)
 	function startNewRound()
 	{
 		//reset the displays
@@ -269,8 +304,8 @@ var rpsController = ( function()
 				break;
 		}
 
-		//start new round after a timer
-		setTimeout( startNewRound, endRoundTimerDuration );
+		//TODO this is not clearing - start new round after a timer
+		endRoundTimerTimeout = setTimeout( function(){ rpsController.startNewRound() }, endRoundTimerDuration );
 
 		//COMPARISON FUNCTIONS
 		function compareScissors()
